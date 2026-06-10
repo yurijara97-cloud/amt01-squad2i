@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Datard's 2I | Performance Logística</title>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link rel="stylesheet" href="css/estilo.css" />
+  
+</head>
+<body>
+
+<header class="app-header">
+  <div class="logo-area">
+    <div>
+      <h1>  Datard's analytics · AMT01: Visualização de dados · Dashboard demonstrativo</h1>
+      <div class="subhead">inteligência logística · entregas & performance</div>
+    </div>
+    <span>v1.0 · AMT01</span>
+  </div>
+</header>
+
+<div class="dashboard">
+  <!-- filtros -->
+  <div class="filters-section">
+    <div class="filters-grid">
+      <div class="filter-item">
+        <label>🌍 recorte regional</label>
+        <select id="filtroRegiao">
+          <option value="Todas">todas as regiões</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label>🚛 operadora logística</label>
+        <select id="filtroTransportadora">
+          <option value="Todas">todas as transportadoras</option>
+        </select>
+      </div>
+      <div class="filter-item">
+        <label>🔎 busca rápida</label>
+        <input type="text" id="busca" placeholder="ID, cidade, operadora..." />
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI cards -->
+  <div class="kpi-strip">
+    <div class="kpi-module" data-insight="total">
+      <div class="kpi-label">total de entregas</div>
+      <div class="kpi-number" id="totalEntregas">0</div>
+      <div class="kpi-hint">volume analisado</div>
+    </div>
+    <div class="kpi-module" data-insight="atrasadas">
+      <div class="kpi-label">com atraso</div>
+      <div class="kpi-number" id="totalAtrasadas">0</div>
+      <div class="kpi-hint">fora do prazo</div>
+    </div>
+    <div class="kpi-module" data-insight="taxa">
+      <div class="kpi-label">taxa de atraso</div>
+      <div class="kpi-number" id="taxaAtraso">0%</div>
+      <div class="kpi-hint">percentual total</div>
+    </div>
+    <div class="kpi-module" data-insight="maior">
+      <div class="kpi-label">maior atraso</div>
+      <div class="kpi-number" id="maiorAtraso">0</div>
+      <div class="kpi-hint">dias corridos</div>
+    </div>
+  </div>
+
+  <!-- Insight automático -->
+  <div class="insight-tile">
+    <h4>📋 análise dinâmica</h4>
+    <p id="insightAutomatico">Aplique filtros para visualizar indicadores em tempo real.</p>
+  </div>
+
+  <div class="charts-row">
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3>📊 dispersão de atraso · transportadoras</h3>
+        <button class="btn-insight" data-insight="transportadora">interpretar</button>
+      </div>
+      <canvas id="graficoPolarTransportadora" style="max-height: 230px;"></canvas>
+    </div>
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3>🗺️ mapa radial · atraso por região</h3>
+        <button class="btn-insight" data-insight="regiao">interpretar</button>
+      </div>
+      <canvas id="graficoRadialRegiao" style="max-height: 230px;"></canvas>
+    </div>
+  </div>
+
+  <div class="charts-row">
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3>🏆 top críticas (dias de atraso)</h3>
+        <button class="btn-insight" data-insight="ranking">interpretar</button>
+      </div>
+      <canvas id="graficoRankingHorizontal" style="max-height: 220px;"></canvas>
+    </div>
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3>⚖️ proporção operacional</h3>
+        <button class="btn-insight" data-insight="status">interpretar</button>
+      </div>
+      <canvas id="graficoDonutStatus" style="max-height: 220px;"></canvas>
+    </div>
+  </div>
+
+  <!-- Tabela entrtegas -->
+  <div class="table-wrapper">
+    <div class="table-header">
+      <strong>📋 entregas em análise</strong>
+      <button class="btn-insight" data-insight="tabela">sobre a tabela</button>
+    </div>
+    <div style="overflow-x: auto;">
+      <table class="data-table">
+        <thead>
+          <tr><th>Código</th><th>Cidade</th><th>Região</th><th>Transportadora</th><th>Prazo</th><th>Real</th><th>Atraso</th><th>Situação</th></tr>
+        </thead>
+        <tbody id="tabelaEntregas"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Caixa de metodologia -->
+  <div class="method-box">
+    <h3>🔍 como funciona a análise</h3>
+    <p><strong>• Identificação de atraso:</strong> diferença entre dias reais e prazo contratado. Valores negativos são desconsiderados (zero).</p>
+<p><strong>• Agregação e priorização:</strong> os atrasos são acumulados por transportadora e região. O ranking crítico ordena pelo maior volume de dias em atraso para direcionar o foco operacional.</p>
+<p><strong>• Taxa de atraso:</strong> (entregas com atraso / total de entregas) × 100. Todas as visualizações refletem os mesmos dados de origem.</p>
+    <p><small>🎯 Métricas extraídas diretamente do fluxo logístico para apoiar decisões estratégicas.</small></p>
+  </div>
+</div>
+
+<footer>
+  Datard's analytics · AMT01: Visualização de dados · dashboard demonstrativo
+</footer>
+
+<div id="globalModal" class="modal-overlay">
+  <div class="modal-window">
+    <div class="modal-head">
+      <h3 id="modalTitle">Insight</h3>
+      <button class="modal-close" id="closeModalBtn">✕</button>
+    </div>
+    <div class="modal-body" id="modalBodyText">
+      Texto explicativo.
+    </div>
+  </div>
+</div>
+
+<script>
+  // =========== DADOS (questao 01) ==========
+  const entregas = [
+    { id: "E001", cidade: "São Paulo", regiao: "Sudeste", transportadora: "Rápido Sul", prazo: 3, diasReais: 4 },
+    { id: "E002", cidade: "Rio de Janeiro", regiao: "Sudeste", transportadora: "LogMax", prazo: 4, diasReais: 4 },
+    { id: "E003", cidade: "Recife", regiao: "Nordeste", transportadora: "Nordeste Express", prazo: 5, diasReais: 8 },
+    { id: "E004", cidade: "Manaus", regiao: "Norte", transportadora: "Amazon Cargo", prazo: 7, diasReais: 10 },
+    { id: "E005", cidade: "Curitiba", regiao: "Sul", transportadora: "Rápido Sul", prazo: 3, diasReais: 3 },
+    { id: "E006", cidade: "Goiânia", regiao: "Centro-Oeste", transportadora: "Brasil Fretes", prazo: 5, diasReais: 7 },
+    { id: "E007", cidade: "Salvador", regiao: "Nordeste", transportadora: "Nordeste Express", prazo: 5, diasReais: 6 },
+    { id: "E008", cidade: "Belém", regiao: "Norte", transportadora: "Amazon Cargo", prazo: 8, diasReais: 12 },
+    { id: "E009", cidade: "Porto Alegre", regiao: "Sul", transportadora: "Rápido Sul", prazo: 4, diasReais: 5 },
+    { id: "E010", cidade: "Brasília", regiao: "Centro-Oeste", transportadora: "Brasil Fretes", prazo: 4, diasReais: 4 }
+  ];
+
+  let graficoPolar, graficoRadar, graficoRankingHoriz, graficoDonut;
+  let dadosAtuais = [...entregas];
+
+  function normalizarTexto(texto) {
+    return texto.toString().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+
+  function atraso(entrega) {
+    return Math.max(0, entrega.diasReais - entrega.prazo);
+  }
+
+  function statusEntrega(entrega) {
+    const dias = atraso(entrega);
+    if (dias === 0) return "No prazo";
+    if (dias <= 2) return "Atenção";
+    return "Crítico";
+  }
+
+  function textoDias(val) { return val === 1 ? "1 dia" : `${val} dias`; }
+
+  function agruparSoma(lista, chave) {
+    return lista.reduce((acc, item) => {
+      const nome = item[chave];
+      acc[nome] = (acc[nome] || 0) + atraso(item);
+      return acc;
+    }, {});
+  }
+
+  function popularFiltros() {
+    const regioes = [...new Set(entregas.map(e => e.regiao))];
+    const transportadoras = [...new Set(entregas.map(e => e.transportadora))];
+    const selectReg = document.getElementById("filtroRegiao");
+    const selectTrans = document.getElementById("filtroTransportadora");
+    regioes.forEach(r => { let opt = document.createElement("option"); opt.value = r; opt.textContent = r; selectReg.appendChild(opt); });
+    transportadoras.forEach(t => { let opt = document.createElement("option"); opt.value = t; opt.textContent = t; selectTrans.appendChild(opt); });
+  }
+
+  function obterDadosFiltrados() {
+    const regiao = document.getElementById("filtroRegiao").value;
+    const transportadora = document.getElementById("filtroTransportadora").value;
+    const busca = normalizarTexto(document.getElementById("busca").value);
+    return entregas.filter(e => {
+      const okRegiao = regiao === "Todas" || e.regiao === regiao;
+      const okTransportadora = transportadora === "Todas" || e.transportadora === transportadora;
+      const textoPesq = normalizarTexto(`${e.id} ${e.cidade} ${e.regiao} ${e.transportadora}`);
+      return okRegiao && okTransportadora && textoPesq.includes(busca);
+    });
+  }
+
+  function atualizarCards(dados) {
+    const total = dados.length;
+    const atrasadas = dados.filter(e => atraso(e) > 0).length;
+    const taxa = total ? Math.round((atrasadas / total) * 100) : 0;
+    const maior = total ? Math.max(...dados.map(e => atraso(e))) : 0;
+    document.getElementById("totalEntregas").innerText = total;
+    document.getElementById("totalAtrasadas").innerText = atrasadas;
+    document.getElementById("taxaAtraso").innerText = taxa + "%";
+    document.getElementById("maiorAtraso").innerText = maior + (maior === 1 ? " dia" : " dias");
+  }
+
+  function atualizarInsight(dados) {
+    if (!dados.length) {
+      document.getElementById("insightAutomatico").innerHTML = "Nenhuma entrega encontrada com os filtros atuais. Altere os parâmetros para visualizar insights.";
+      return;
+    }
+    const atrasadas = dados.filter(e => atraso(e) > 0);
+    const taxa = Math.round((atrasadas.length / dados.length) * 100);
+    const maisCritica = [...dados].sort((a,b) => atraso(b)-atraso(a))[0];
+    const porRegiao = agruparSoma(dados, "regiao");
+    const regiaoCritica = Object.entries(porRegiao).sort((a,b)=>b[1]-a[1])[0];
+    document.getElementById("insightAutomatico").innerHTML = `🎯 <strong>${dados.length} entregas</strong> no período filtrado. Destas, <strong>${atrasadas.length} com atraso</strong> (${taxa}%). Maior ocorrência: <strong>${maisCritica.id} (${maisCritica.cidade})</strong> com ${textoDias(atraso(maisCritica))}. Região com maior soma de atraso: <strong>${regiaoCritica[0]}</strong> (${textoDias(regiaoCritica[1])} acumulados).`;
+  }
+
+  function atualizarTabela(dados) {
+    const tbody = document.getElementById("tabelaEntregas");
+    tbody.innerHTML = "";
+    const ordenados = [...dados].sort((a,b) => atraso(b)-atraso(a));
+    ordenados.forEach(e => {
+      const dias = atraso(e);
+      const status = statusEntrega(e);
+      let chipClass = "chip-green";
+      if (status === "Atenção") chipClass = "chip-orange";
+      if (status === "Crítico") chipClass = "chip-red";
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${e.id}</td><td>${e.cidade}</td><td>${e.regiao}</td><td>${e.transportadora}</td>
+        <td>${textoDias(e.prazo)}</td><td>${textoDias(e.diasReais)}</td>
+        <td>${textoDias(dias)}</td><td><span class="status-chip ${chipClass}">${status}</span></td>
+      `;
+      tr.addEventListener("click", () => abrirModal(`📦 Entrega ${e.id}`, `Destino: ${e.cidade} (${e.regiao}) | Operadora: ${e.transportadora}<br>Prazo: ${textoDias(e.prazo)} | Real: ${textoDias(e.diasReais)} | Atraso: ${textoDias(dias)}<br>Classificação: ${status}.`));
+      tbody.appendChild(tr);
+    });
+  }
+
+  function destruirGraficos() {
+    if (graficoPolar) graficoPolar.destroy();
+    if (graficoRadar) graficoRadar.destroy();
+    if (graficoRankingHoriz) graficoRankingHoriz.destroy();
+    if (graficoDonut) graficoDonut.destroy();
+  }
+
+  // Gráfico Polar Area (transportadora)
+  function criarGraficoPolar(labels, valores) {
+    const ctx = document.getElementById("graficoPolarTransportadora").getContext("2d");
+    return new Chart(ctx, {
+      type: "polarArea",
+      data: { labels: labels, datasets: [{ data: valores, backgroundColor: ["#2c7da0", "#20b2aa", "#e76f51", "#f4a261", "#e9c46a"], borderWidth: 0 }] },
+      options: { responsive: true, maintainAspectRatio: true, plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw} dias de atraso` } } }, onClick: (_, el) => { if(el.length) { const i = el[0].index; abrirModal(`Transportadora: ${labels[i]}`, `Soma total de atraso: ${textoDias(valores[i])}. Ideal para comparar performance.`); } } }
+    });
+  }
+
+  // Radar chart para regiões
+  function criarGraficoRadar(labels, valores) {
+    const ctx = document.getElementById("graficoRadialRegiao").getContext("2d");
+    return new Chart(ctx, {
+      type: "radar",
+      data: { labels: labels, datasets: [{ label: "dias de atraso", data: valores, backgroundColor: "rgba(44,125,160,0.2)", borderColor: "#2c7da0", pointBackgroundColor: "#e76f51", pointBorderColor: "#fff", borderWidth: 2 }] },
+      options: { responsive: true, scales: { r: { ticks: { stepSize: 2, backdropColor: "transparent" }, grid: { color: "#ddd" } } }, plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw} dias` } } }, onClick: (_, el) => { if(el.length) { const i = el[0].index; abrirModal(`Região: ${labels[i]}`, `Atraso acumulado: ${textoDias(valores[i])}. Esta região merece atenção.`); } } }
+    });
+  }
+
+  // Horizontal Bar (ranking)
+  function criarGraficoRankingHorizontal(labels, valores) {
+    const ctx = document.getElementById("graficoRankingHorizontal").getContext("2d");
+    return new Chart(ctx, {
+      type: "bar",
+      data: { labels: labels, datasets: [{ label: "dias em atraso", data: valores, backgroundColor: "#f4a261", borderRadius: 6 }] },
+      options: { indexAxis: "y", responsive: true, maintainAspectRatio: true, plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.raw} dias` } } }, onClick: (_, el) => { if(el.length) { const i = el[0].index; abrirModal(`Entrega crítica: ${labels[i]}`, `Atraso total: ${textoDias(valores[i])}. Alta prioridade.`); } } }
+    });
+  }
+
+  function criarGraficoDonut(noPrazo, atrasadas) {
+    const ctx = document.getElementById("graficoDonutStatus").getContext("2d");
+    return new Chart(ctx, {
+      type: "doughnut",
+      data: { labels: ["No prazo", "Atrasadas"], datasets: [{ data: [noPrazo, atrasadas], backgroundColor: ["#2a9d8f", "#e76f51"], borderWidth: 0, cutout: "60%" }] },
+      options: { responsive: true, plugins: { legend: { position: "bottom" }, tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw} entregas (${Math.round((ctx.raw/(noPrazo+atrasadas))*100)}%)` } } }, onClick: () => abrirModal("Status consolidado", `Das entregas filtradas, ${noPrazo} estão no prazo e ${atrasadas} registram atraso.`) }
+    });
+  }
+
+  function atualizarTodosGraficos(dados) {
+    destruirGraficos();
+
+    const atrasoTransportadora = agruparSoma(dados, "transportadora");
+    const atrasoRegiao = agruparSoma(dados, "regiao");
+    const ranking = [...dados].filter(e => atraso(e) > 0).sort((a,b) => atraso(b)-atraso(a)).slice(0,5);
+    const noPrazo = dados.filter(e => atraso(e) === 0).length;
+    const atrasadasCount = dados.filter(e => atraso(e) > 0).length;
+
+    graficoPolar = criarGraficoPolar(Object.keys(atrasoTransportadora), Object.values(atrasoTransportadora));
+    graficoRadar = criarGraficoRadar(Object.keys(atrasoRegiao), Object.values(atrasoRegiao));
+    graficoRankingHoriz = criarGraficoRankingHorizontal(ranking.map(e => `${e.id} - ${e.cidade}`), ranking.map(e => atraso(e)));
+    graficoDonut = criarGraficoDonut(noPrazo, atrasadasCount);
+  }
+
+  function abrirModal(titulo, texto) {
+    document.getElementById("modalTitle").innerText = titulo;
+    document.getElementById("modalBodyText").innerHTML = texto;
+    document.getElementById("globalModal").classList.add("active");
+  }
+
+  function fecharModal() {
+    document.getElementById("globalModal").classList.remove("active");
+  }
+
+  function gerarTextoInsight(tipo) {
+    const dados = dadosAtuais;
+    const total = dados.length;
+    const atrasadas = dados.filter(e => atraso(e) > 0);
+    const taxa = total ? Math.round((atrasadas.length / total) * 100) : 0;
+    const maior = [...dados].sort((a,b)=>atraso(b)-atraso(a))[0];
+    const somaTransp = agruparSoma(dados, "transportadora");
+    const transpCritica = Object.entries(somaTransp).sort((a,b)=>b[1]-a[1])[0];
+    const somaReg = agruparSoma(dados, "regiao");
+    const regCritica = Object.entries(somaReg).sort((a,b)=>b[1]-a[1])[0];
+    const mapping = {
+      total: ["Total de entregas", `Escopo atual: ${total} entregas.`],
+      atrasadas: ["Entregas em atraso", `${atrasadas.length} entregas (${taxa}% do total).`],
+      taxa: ["Taxa de atraso detectada", `Índice de ${taxa}% sobre o volume filtrado.`],
+      maior: ["Maior atraso identificado", maior ? `Entrega ${maior.id} - ${maior.cidade}, atraso de ${textoDias(atraso(maior))}.` : "Sem atrasos."],
+      transportadora: ["Análise por operadora", transpCritica ? `${transpCritica[0]} é a mais crítica com ${textoDias(transpCritica[1])} de atraso.` : "Nenhum atraso."],
+      regiao: ["Destaque regional", regCritica ? `${regCritica[0]} registra maior soma: ${textoDias(regCritica[1])}.` : "Sem dados."],
+      status: ["Status operacional", `Proporção: ${total - atrasadas.length} ok / ${atrasadas.length} atrasadas.`],
+      ranking: ["Ranking de criticidade", "Top 5 entregas com maior atraso mostradas no gráfico horizontal."],
+      tabela: ["Interpretação da tabela", "A tabela é ordenada pelos dias de atraso decrescente. Clique em qualquer linha para detalhes da entrega."]
+    };
+    return mapping[tipo] || ["Insight", "Utilize os filtros para refinar a análise."];
+  }
+
+  function atualizarDashboard() {
+    dadosAtuais = obterDadosFiltrados();
+    atualizarCards(dadosAtuais);
+    atualizarInsight(dadosAtuais);
+    atualizarTabela(dadosAtuais);
+    atualizarTodosGraficos(dadosAtuais);
+  }
+
+  // Eventos
+  document.getElementById("filtroRegiao").addEventListener("change", atualizarDashboard);
+  document.getElementById("filtroTransportadora").addEventListener("change", atualizarDashboard);
+  document.getElementById("busca").addEventListener("input", atualizarDashboard);
+  document.querySelectorAll("[data-insight]").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const tipo = btn.getAttribute("data-insight");
+      const [tit, txt] = gerarTextoInsight(tipo);
+      abrirModal(tit, txt);
+    });
+  });
+  document.getElementById("closeModalBtn").addEventListener("click", fecharModal);
+  document.getElementById("globalModal").addEventListener("click", (e) => { if(e.target === document.getElementById("globalModal")) fecharModal(); });
+
+  popularFiltros();
+  atualizarDashboard();
+</script>
+</body>
+</html>

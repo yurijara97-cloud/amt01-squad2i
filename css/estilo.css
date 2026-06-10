@@ -1,0 +1,400 @@
+* {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #f4f6fa;
+      --bg-card: #ffffff;
+      --text-primary: #1a2634;
+      --text-secondary: #5b6e8c;
+      --text-muted: #8e9eae;
+      --accent-blue: #2c7da0;
+      --accent-teal: #20b2aa;
+      --accent-coral: #e76f51;
+      --accent-sand: #f4a261;
+      --accent-rose: #e9c46a;
+      --accent-mint: #2a9d8f;
+      --border-light: #e2e8f0;
+      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+    }
+
+    body {
+      background: var(--bg-primary);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      color: var(--text-primary);
+      line-height: 1.45;
+    }
+
+    /* Header minimalista */
+    .app-header {
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-light);
+      padding: 1.5rem 2rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .logo-area {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .logo-area h1 {
+      font-size: 1.6rem;
+      font-weight: 600;
+      color: var(--accent-blue);
+      letter-spacing: -0.3px;
+    }
+
+    .logo-area span {
+      font-size: 0.75rem;
+      background: #eef2ff;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      color: var(--accent-blue);
+    }
+
+    .subhead {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      margin-top: 0.4rem;
+    }
+
+    /* Layout principal com grid */
+    .dashboard {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1.8rem 2rem;
+    }
+
+    /* Filtros estilo segmentado */
+    .filters-section {
+      background: var(--bg-card);
+      border-radius: 20px;
+      padding: 1.2rem 1.5rem;
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-light);
+    }
+
+    .filters-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      align-items: flex-end;
+    }
+
+    .filter-item {
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .filter-item label {
+      display: block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .filter-item select, .filter-item input {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      border: 1px solid var(--border-light);
+      border-radius: 14px;
+      background: white;
+      font-size: 0.85rem;
+      color: var(--text-primary);
+      transition: all 0.2s;
+    }
+
+    .filter-item select:focus, .filter-item input:focus {
+      outline: none;
+      border-color: var(--accent-teal);
+      box-shadow: 0 0 0 3px rgba(32, 178, 170, 0.1);
+    }
+
+    /* KPIs horizontais com novo estilo */
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.2rem;
+      margin-bottom: 2rem;
+    }
+
+    .kpi-module {
+      background: var(--bg-card);
+      border-radius: 18px;
+      padding: 1rem 1.2rem;
+      box-shadow: var(--shadow-sm);
+      border-left: 4px solid var(--accent-teal);
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .kpi-module:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .kpi-module .kpi-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.4px;
+    }
+
+    .kpi-module .kpi-number {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent-blue);
+      line-height: 1.2;
+      margin: 0.3rem 0 0.2rem;
+    }
+
+    .kpi-module .kpi-hint {
+      font-size: 0.65rem;
+      color: var(--text-secondary);
+    }
+
+    /* insight card acordeão */
+    .insight-tile {
+      background: #eef8f7;
+      border-radius: 20px;
+      padding: 1rem 1.5rem;
+      margin-bottom: 2rem;
+      border-left: 5px solid var(--accent-mint);
+    }
+
+    .insight-tile h4 {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--accent-mint);
+      letter-spacing: 1px;
+    }
+
+    .insight-tile p {
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      margin-top: 0.4rem;
+    }
+
+    /* grid de gráficos com novo arranjo: linha 3 colunas? na verdade 2+2 + diferente */
+    .charts-row {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 1.8rem;
+    }
+
+    .chart-container {
+      background: var(--bg-card);
+      border-radius: 24px;
+      padding: 1.2rem;
+      box-shadow: var(--shadow-sm);
+      transition: all 0.2s;
+    }
+
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px dotted var(--border-light);
+    }
+
+    .chart-header h3 {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .btn-insight {
+      background: none;
+      border: 1px solid var(--border-light);
+      padding: 0.25rem 0.9rem;
+      border-radius: 40px;
+      font-size: 0.7rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-insight:hover {
+      background: var(--accent-teal);
+      color: white;
+      border-color: var(--accent-teal);
+    }
+
+    canvas {
+      max-height: 240px;
+      width: 100%;
+    }
+
+    /* Tabela moderna */
+    .table-wrapper {
+      background: var(--bg-card);
+      border-radius: 24px;
+      padding: 0;
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      margin: 1.5rem 0 1.5rem;
+    }
+
+    .table-header {
+      padding: 1rem 1.5rem;
+      background: #fafcff;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+    }
+
+    .data-table th {
+      text-align: left;
+      padding: 0.9rem 1rem;
+      background: #f8fafc;
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.75rem;
+    }
+
+    .data-table td {
+      padding: 0.8rem 1rem;
+      border-bottom: 1px solid var(--border-light);
+      color: var(--text-primary);
+    }
+
+    .data-table tr {
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .data-table tr:hover {
+      background: #f9fbfe;
+    }
+
+    .status-chip {
+      display: inline-block;
+      padding: 0.2rem 0.7rem;
+      border-radius: 30px;
+      font-size: 0.7rem;
+      font-weight: 500;
+    }
+
+    .chip-green { background: #e3f7ec; color: #2b7a4b; }
+    .chip-orange { background: #fff0e0; color: #c96f0e; }
+    .chip-red { background: #ffe5e5; color: #bc3f2e; }
+
+    /* Seção de metodologia cards lateral? Usaremos área diferenciada */
+    .method-box {
+      background: linear-gradient(135deg, #fef9e8, #ffffff);
+      border-radius: 20px;
+      padding: 1.3rem 1.8rem;
+      margin-top: 1.8rem;
+      border: 1px solid #f0e5cf;
+    }
+
+    .method-box h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--accent-coral);
+      margin-bottom: 0.5rem;
+    }
+
+    .method-box p {
+      font-size: 0.8rem;
+      color: #5a5a5a;
+      margin-bottom: 0.6rem;
+      line-height: 1.5;
+    }
+
+    footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-light);
+      margin-top: 1rem;
+    }
+
+    /* Modal completamente repaginado */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(3px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-window {
+      background: white;
+      max-width: 480px;
+      width: 90%;
+      border-radius: 32px;
+      box-shadow: 0 30px 40px rgba(0, 0, 0, 0.2);
+      animation: fadeUp 0.2s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+
+    .modal-window .modal-head {
+      padding: 1.2rem 1.5rem 0.5rem;
+      border-bottom: 2px solid var(--accent-teal);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-window .modal-head h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #aaa;
+    }
+
+    .modal-body {
+      padding: 1.5rem;
+      font-size: 0.9rem;
+      color: #2c3e4e;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 780px) {
+      .dashboard { padding: 1rem; }
+      .kpi-strip, .charts-row { grid-template-columns: 1fr; }
+      .filters-grid { flex-direction: column; }
+    }
